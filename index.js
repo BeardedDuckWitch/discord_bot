@@ -1,6 +1,6 @@
 const fs = require('node:fs');
 const path = require('node:path');
-const { Client, Collection, GatewayIntentBits } = require('discord.js');
+const { Client, Collection, GatewayIntentBits, Events } = require('discord.js');
 require('dotenv').config();
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers] });
@@ -18,4 +18,25 @@ for (const file of eventFiles) {
 	}
 }
 
+client.once(Events.ClientReady, async (client) => {
+	const guild = client.guilds.cache.get(process.env.GUILD);
+
+	let res = await guild.members.fetch();
+
+	for (const member of res.values()){
+		if(member.roles.cache.has(process.env.ROLE1) || member.roles.cache.has(process.env.ROLE2)){
+			continue;
+		}
+
+		const roles = [member.guild.roles.cache.get(process.env.ROLE1), member.guild.roles.cache.get(process.env.ROLE2)]
+        const role = roles[Math.floor(Math.random() * 2)];
+		try{
+			await member.roles.add(role);
+			console.log(`Assigned ${role.name} to ${member.user.tag}`);
+		} catch (error){
+			console.error(`Failed to assign role to ${member.user.tag}:`, error);
+		}
+	}
+	console.log("Finished checking all the members");
+})
 client.login(process.env.DISCORD_TOKEN);
