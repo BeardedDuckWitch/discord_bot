@@ -24,7 +24,7 @@ client.once(Events.ClientReady, async (client) => {
 	let res = await guild.members.fetch();
 
 	for (const member of res.values()){
-		if(member.roles.cache.has(process.env.ROLE1) || member.roles.cache.has(process.env.ROLE2)){
+		if(member.roles.cache.has(process.env.ROLE1) || member.roles.cache.has(process.env.ROLE2) || member.role.cache.has(process.env.ROLE_LEADER)){
 			continue;
 		}
 
